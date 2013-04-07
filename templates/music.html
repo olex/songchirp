@@ -3,6 +3,7 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>SongChirpApp - Music</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
 <style type='text/css'>
 @import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400, 700);
 * {
@@ -15,14 +16,55 @@ font-size:11px;
  <script type='text/javascript'>
 //<![CDATA[
 //script will be here
+function ctrlRead($scope) {
+	//init	
+    $scope.reverse = false;
+    $scope.filteredItems = [];
+    $scope.groupedItems = [];
+    $scope.itemsPerPage = 7;
+    $scope.pagedItems = [];
+    $scope.currentPage = 0;
+        
+    $scope.range = function (start, end) {
+        var ret = [];
+        if (!end) {
+            end = start;
+            start = 0;
+        }
+        for (var i = start; i < end; i++) {
+            ret.push(i);
+        }
+        return ret;
+    };
+    
+    $scope.prevPage = function () {
+        if ($scope.currentPage > 0) {
+            $scope.currentPage--;
+        }
+    };
+    
+    $scope.nextPage = function () {
+        if ($scope.currentPage < $scope.pagedItems.length - 1) {
+            $scope.currentPage++;
+        }
+    };
+    
+    $scope.setPage = function () {
+        $scope.currentPage = this.n;
+    };
+};
+ctrlRead.$inject = ['$scope'];
+
  </script>
  
 </head>
-<body ng-app="Pagnition">
-<div class="row">
-	<div class="navbar">
-	  <div class="navbar-inner">
-	    <div class="container">
+
+<body>
+	<div ng-controller="ctrlRead">
+		<div class="row">
+		<div class="navbar">
+	  	<div class="navbar-inner">
+	    	<div class="container">
 			<a class="brand" href="#/">Songchirp</a>
 			<ul class="nav">
 				<li class="active"><a href="#/music">Music</a></li>
@@ -30,10 +72,11 @@ font-size:11px;
 				<li><a href="#/automat">Automat</a></li>
 				<li><a href="#/about">About</a></li>
 			</ul>
-	    </div>
-	  </div>
+	    	</div>
+	  	</div>
+		</div>
 	</div>
-</div>
+
 <div class="row">
 	<a class="btn btn-large btn-warning" href="#/next"><i class="icon-play"></i> Play radio</a>
 	<br/>
@@ -45,6 +88,25 @@ font-size:11px;
 			<td><a href="#/music/{{music.id}}"><b>{{music.name}}</b></a></td>
 		    <td>{{music.play_count}}</td>
 		</tr>
+		    <tfoot>
+		    	<td colspan="6">
+				<div class="pagination pull-right">
+                            		<ul>
+                                		<li ng-class="{disabled: currentPage == 0}">
+                                    		<a href ng-click="prevPage()">« Prev</a>
+                                		</li>
+                                		<li ng-repeat="n in range(pagedItems.length)"
+                                    		ng-class="{active: n == currentPage}"
+                                		ng-click="setPage()">
+                                    		<a href ng-bind="n + 1">1</a>
+                                		</li>
+                                		<li ng-class="{disabled: currentPage == pagedItems.length - 1}">
+                                    		<a href ng-click="nextPage()">Next »</a>
+                                		</li>
+                            		</ul>
+                   		</div>
+                        </td>
+                     </tfoot>                       
 	</table>
 </div>
 </body>
